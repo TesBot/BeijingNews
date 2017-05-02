@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import app_beijingnews.alex.com.beijingnews.activity.GuideActivity;
+import app_beijingnews.alex.com.beijingnews.activity.MainActivity;
 import app_beijingnews.alex.com.beijingnews.utils.CacheUtils;
 
 public class SplashActivity extends Activity {
@@ -55,14 +56,17 @@ public class SplashActivity extends Activity {
         public void onAnimationEnd(Animation animation) {
             //判断是否进入过主页面
             boolean isStartMain = CacheUtils.getBoolean(SplashActivity.this,START_MAIN);
+            Intent intent;
             //进入过，直接进主页面
             if(isStartMain) {
+                intent = new Intent(SplashActivity.this,MainActivity.class);
 
             }else {//无，则进入引导界面
-                Intent intent = new Intent(SplashActivity.this,GuideActivity.class);
-                startActivity(intent);
+                intent = new Intent(SplashActivity.this,GuideActivity.class);
+
 //                Toast.makeText(SplashActivity.this, "播放完成", Toast.LENGTH_SHORT).show();
             }
+            startActivity(intent);
             //关闭闪屏
             finish();
         }
