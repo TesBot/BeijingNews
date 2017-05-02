@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:id="@+id/rl_splashs_root"
     android:layout_height="match_parent"
-    android:background="@drawable/splash_bg_gailun"
+    android:background="@drawable/splash_bg_welcome"
     tools:context="app_beijingnews.alex.com.beijingnews.SplashActivity">
 
 
