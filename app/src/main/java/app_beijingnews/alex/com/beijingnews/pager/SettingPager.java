@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.widget.TextView;
 
 import app_beijingnews.alex.com.beijingnews.base.BasePager;
+import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
 
 /**
  * Created by Jhin on 2017/5/10 0010.
@@ -20,6 +21,8 @@ public class SettingPager extends BasePager {
     @Override
     public void initData() {
         super.initData();
+        LogUtil.e("设置中心数据被初始化");
+
         //设置标题
         tv_title.setText("设置中心");
         //联网请求数据，创建视图
