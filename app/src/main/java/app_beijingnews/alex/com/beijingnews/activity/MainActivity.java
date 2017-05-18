@@ -60,4 +60,19 @@ public class MainActivity extends SlidingFragmentActivity {
         ft.commit();
 
     }
+
+    public LeftmenuFragment getLeftmenuFragment() {
+
+        FragmentManager fm = getSupportFragmentManager();
+        LeftmenuFragment  leftmenuFragment = (LeftmenuFragment) fm.findFragmentByTag(LEFTMENU_TAG);
+        return leftmenuFragment;
+    }
+
+    /**
+     * 得到正文的Fragment
+     * @return
+     */
+    public ContentFragment getContentFragment() {
+        return (ContentFragment) getSupportFragmentManager().findFragmentByTag(MAIN_CONTENT_TAG);
+    }
 }

@@ -3,6 +3,7 @@ package app_beijingnews.alex.com.beijingnews.pager;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -11,8 +12,18 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import app_beijingnews.alex.com.beijingnews.activity.MainActivity;
 import app_beijingnews.alex.com.beijingnews.base.BasePager;
+import app_beijingnews.alex.com.beijingnews.base.MenuDetailBasePager;
 import app_beijingnews.alex.com.beijingnews.domain.NewsCenterPagerBean;
+import app_beijingnews.alex.com.beijingnews.fragment.LeftmenuFragment;
+import app_beijingnews.alex.com.beijingnews.menudetailpager.InteracMenuDetailPager;
+import app_beijingnews.alex.com.beijingnews.menudetailpager.NewsMenuDetailPager;
+import app_beijingnews.alex.com.beijingnews.menudetailpager.PhotosMenuDetailPager;
+import app_beijingnews.alex.com.beijingnews.menudetailpager.TopicMenuDetailPager;
 import app_beijingnews.alex.com.beijingnews.utils.Constants;
 import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
 
@@ -21,6 +32,13 @@ import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
  */
 
 public class NewsCenterPager extends BasePager {
+    //左侧菜单对应的数据集合
+    List<NewsCenterPagerBean.DataBean> data;
+    /**
+     * 详情页面的集合
+     */
+    private ArrayList<MenuDetailBasePager> detailBasePagers;
+
     public NewsCenterPager(Context context) {
         super(context);
     }
@@ -29,6 +47,7 @@ public class NewsCenterPager extends BasePager {
     public void initData() {
         super.initData();
         LogUtil.e("新闻中心数据被初始化");
+        ib_menu.setVisibility(View.VISIBLE);
 
         //设置标题
         tv_title.setText("新闻中心");
@@ -89,6 +108,24 @@ public class NewsCenterPager extends BasePager {
         NewsCenterPagerBean bean = parsedJson(json);
         String title = bean.getData().get(0).getChildren().get(1).getTitle();
         LogUtil.e("使用Gson解析Json数据成功 title == "+title);
+
+        //给左侧菜单传递数据
+        data = bean.getData();
+
+        //
+        MainActivity mainActivity = (MainActivity) context;
+        LeftmenuFragment leftmenuFragment = mainActivity.getLeftmenuFragment();
+
+        //添加详情页面
+        detailBasePagers = new ArrayList<>();
+        detailBasePagers.add(new NewsMenuDetailPager(context)); //新闻详情页面
+        detailBasePagers.add(new TopicMenuDetailPager(context)); //专题详情页面
+        detailBasePagers.add(new PhotosMenuDetailPager(context)); //组图详情页面
+        detailBasePagers.add(new InteracMenuDetailPager(context)); //互动详情页面
+
+        //把数据传递给左侧菜单；
+        leftmenuFragment.setData(data);
+
     }
 
     /**
@@ -100,6 +137,24 @@ public class NewsCenterPager extends BasePager {
         Gson gson = new Gson();
         NewsCenterPagerBean bean = gson.fromJson(json,NewsCenterPagerBean.class);
         return bean;
+    }
+
+    /**
+     * 根据位置切换详情页面
+     * @param position
+     */
+    public void switchPager(int position) {
+        //设置标题
+        tv_title.setText(data.get(position).getTitle());
+
+        //移除内容
+        fl_content.removeAllViews(); //移除之前所有试图
+
+        //添加新内容
+        MenuDetailBasePager detailBasePager = detailBasePagers.get(position);
+        View rootView = detailBasePager.rootView;
+        detailBasePager.initData(); //初始化数据
+        fl_content.addView(rootView);
     }
 }
 
