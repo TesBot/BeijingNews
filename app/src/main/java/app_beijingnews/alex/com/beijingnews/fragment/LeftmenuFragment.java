@@ -19,7 +19,8 @@ import java.util.List;
 import app_beijingnews.alex.com.beijingnews.R;
 import app_beijingnews.alex.com.beijingnews.activity.MainActivity;
 import app_beijingnews.alex.com.beijingnews.base.BaseFragment;
-import app_beijingnews.alex.com.beijingnews.domain.NewsCenterPagerBean;
+//import app_beijingnews.alex.com.beijingnews.domain.NewsCenterPagerBean;
+import app_beijingnews.alex.com.beijingnews.domain.NewsCenterPagerBean2;
 import app_beijingnews.alex.com.beijingnews.pager.NewsCenterPager;
 import app_beijingnews.alex.com.beijingnews.utils.DensityUtil;
 import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
@@ -30,7 +31,8 @@ import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
 
 public class LeftmenuFragment extends BaseFragment {
 
-    private List<NewsCenterPagerBean.DataBean> data;
+//    private List<NewsCenterPagerBean.DataBean> data;
+    private List<NewsCenterPagerBean2.DetailPagerData> data;
 
     private ListView listView;
 
@@ -87,7 +89,8 @@ public class LeftmenuFragment extends BaseFragment {
     }
 
     //接收数据
-    public void setData(List<NewsCenterPagerBean.DataBean> data) {
+//    public void setData(List<NewsCenterPagerBean.DataBean> data) {
+    public void setData(List<NewsCenterPagerBean2.DetailPagerData> data) {
         this.data = data;
         for(int i=0; i<data.size();i++){
 
