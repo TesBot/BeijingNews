@@ -2,6 +2,7 @@ package app_beijingnews.alex.com.beijingnews.pager;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import app_beijingnews.alex.com.beijingnews.menudetailpager.InteracMenuDetailPag
 import app_beijingnews.alex.com.beijingnews.menudetailpager.NewsMenuDetailPager;
 import app_beijingnews.alex.com.beijingnews.menudetailpager.PhotosMenuDetailPager;
 import app_beijingnews.alex.com.beijingnews.menudetailpager.TopicMenuDetailPager;
+import app_beijingnews.alex.com.beijingnews.utils.CacheUtils;
 import app_beijingnews.alex.com.beijingnews.utils.Constants;
 import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
 
@@ -66,6 +68,12 @@ public class NewsCenterPager extends BasePager {
         fl_content.addView(textView);
         //绑定数据
         textView.setText("新闻中心内容");
+        //获取缓存数据
+        String saveJson = CacheUtils.getString(context,Constants.NEWCSCENTER_PAGER_URL); //“”
+
+        if(!TextUtils.isEmpty(saveJson)){
+            processData(saveJson);
+        }
 
         //联网请求数据
         getDataFromNet();
@@ -81,6 +89,9 @@ public class NewsCenterPager extends BasePager {
             @Override
             public void onSuccess(String result) {
                 LogUtil.e("使用Xutils3联网请求成功 == "+result);
+                //缓存数据
+                CacheUtils.putString(context,Constants.NEWCSCENTER_PAGER_URL,result);
+
                 processData(result);
 
             }
@@ -128,7 +139,7 @@ public class NewsCenterPager extends BasePager {
 
         //添加详情页面
         detailBasePagers = new ArrayList<>();
-        detailBasePagers.add(new NewsMenuDetailPager(context)); //新闻详情页面
+        detailBasePagers.add(new NewsMenuDetailPager(context,data.get(0))); //新闻详情页面
         detailBasePagers.add(new TopicMenuDetailPager(context)); //专题详情页面
         detailBasePagers.add(new PhotosMenuDetailPager(context)); //组图详情页面
         detailBasePagers.add(new InteracMenuDetailPager(context)); //互动详情页面
