@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.viewpagerindicator.TabPageIndicator;
+
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
@@ -27,6 +29,9 @@ import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
  */
 
 public class NewsMenuDetailPager extends MenuDetailBasePager{
+
+    @ViewInject(R.id.tabPageIndicator)
+    private TabPageIndicator tabPageIndicator;
 
     @ViewInject(R.id.viewpager)
     private ViewPager viewPager;
@@ -62,9 +67,19 @@ public class NewsMenuDetailPager extends MenuDetailBasePager{
 
         //设置ViewPager适配器
         viewPager.setAdapter(new MyNewsMenuDetailPagerAdapter());
+        //ViewPager和TabPageIndicator关联
+        tabPageIndicator.setViewPager(viewPager);
+
+        //注意监听页面变化，用TabPageIndicator来监听页面
     }
 
+
     class MyNewsMenuDetailPagerAdapter extends PagerAdapter{
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return children.get(position).getTitle();
+        }
 
         @Override
         public int getCount() {
