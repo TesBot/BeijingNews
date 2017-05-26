@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -18,6 +19,7 @@ import com.google.gson.Gson;
 import org.xutils.common.Callback;
 import org.xutils.common.util.DensityUtil;
 import org.xutils.http.RequestParams;
+import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
 import java.util.List;
@@ -41,6 +43,8 @@ public class TableDetailPager extends MenuDetailBasePager {
     private TextView tv_title;
     private LinearLayout ll_point_group;
     private ListView listview;
+    private TabDetailPagerListAdapter adapter;
+    private ImageOptions imageOptions;
 
     private final NewsCenterPagerBean2.DetailPagerData.ChildrenData childrenData;
     private String url;
@@ -48,10 +52,25 @@ public class TableDetailPager extends MenuDetailBasePager {
      * 顶部轮播图部分数据
      */
     private List<TabDetailPagerBean.DataBean.TopnewsBean> topnews;
+    /**
+     * x新闻列表数据集合
+     */
+    private List<TabDetailPagerBean.DataBean.NewsBean> news;
 
     public TableDetailPager(Context context, NewsCenterPagerBean2.DetailPagerData.ChildrenData childrenData) {
         super(context);
         this.childrenData = childrenData;
+        imageOptions = new ImageOptions.Builder()
+                .setSize(DensityUtil.dip2px(100), DensityUtil.dip2px(100))
+                .setRadius(DensityUtil.dip2px(5))
+                // 如果ImageView的大小不是定义为wrap_content, 不要crop.
+                .setCrop(true) // 很多时候设置了合适的scaleType也不需要它.
+                // 加载中或错误图片的ScaleType
+                //.setPlaceholderScaleType(ImageView.ScaleType.MATRIX)
+                .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
+                .setLoadingDrawableId(R.drawable.news_pic_default)
+                .setFailureDrawableId(R.drawable.news_pic_default)
+                .build();
     }
 
 
@@ -59,10 +78,15 @@ public class TableDetailPager extends MenuDetailBasePager {
     @Override
     public View initView() {
         View view = View.inflate(context, R.layout.tabdetail_pager,null);
-        viewpager = (ViewPager) view.findViewById(R.id.viewpager);
-        tv_title = (TextView) view.findViewById(R.id.tv_title);
-        ll_point_group = (LinearLayout) view.findViewById(R.id.ll_point_group);
         listview = (ListView) view.findViewById(R.id.listview);
+
+        View topNewsView = View.inflate(context,R.layout.topnews,null);
+        viewpager = (ViewPager) topNewsView.findViewById(R.id.viewpager);
+        tv_title = (TextView) topNewsView.findViewById(R.id.tv_title);
+        ll_point_group = (LinearLayout) topNewsView.findViewById(R.id.ll_point_group);
+
+        //把顶部轮播图视图，以头的方式添加到ListView中
+        listview.addHeaderView(topNewsView);
 
         return view;
     }
@@ -145,7 +169,6 @@ public class TableDetailPager extends MenuDetailBasePager {
             imageView.setBackgroundResource(R.drawable.point_selector);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(DensityUtil.dip2px(8),DensityUtil.dip2px(8));
 
-
             if(i==0){
                 imageView.setEnabled(true);
             }else{
@@ -162,6 +185,69 @@ public class TableDetailPager extends MenuDetailBasePager {
         viewpager.addOnPageChangeListener(new MyOnPageChangeListener());
         tv_title.setText(topnews.get(prePosition).getTitle());
 
+        //准备iListView对应的集合数据
+        news = bean.getData().getNews();
+
+        //设置ListView的适配器
+        adapter = new TabDetailPagerListAdapter();
+        listview.setAdapter(adapter);
+
+
+    }
+
+    class TabDetailPagerListAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return news.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if(convertView == null){
+                convertView = View.inflate(context,R.layout.item_tabdetail_pager,null);
+                viewHolder = new ViewHolder();
+                viewHolder.iv_icon = (ImageView) convertView.findViewById(R.id.iv_icon);
+                viewHolder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
+                viewHolder.tv_time = (TextView) convertView.findViewById(R.id.tv_time);
+
+                convertView.setTag(viewHolder);
+
+            }else{
+                viewHolder = (ViewHolder) convertView.getTag();
+
+            }
+
+            //根据位置得到数据
+
+            TabDetailPagerBean.DataBean.NewsBean newsData = news.get(position);
+            String imageUrl = Constants.BASE_URL+newsData.getListimage();
+            //请求图片
+            x.image().bind(viewHolder.iv_icon,imageUrl,imageOptions);
+            //设置标题
+            viewHolder.tv_title.setText(newsData.getTitle());
+            //设置时间
+            viewHolder.tv_time.setText(newsData.getPubdate());
+
+            return convertView;
+        }
+    }
+
+    static class ViewHolder{
+        ImageView iv_icon;
+        TextView tv_title;
+        TextView tv_time;
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener{
