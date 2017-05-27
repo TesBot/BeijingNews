@@ -31,6 +31,7 @@ import app_beijingnews.alex.com.beijingnews.domain.TabDetailPagerBean;
 import app_beijingnews.alex.com.beijingnews.utils.CacheUtils;
 import app_beijingnews.alex.com.beijingnews.utils.Constants;
 import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
+import app_beijingnews.alex.com.beijingnews.view.HorizontalScrollViewPager;
 
 /**
  * 页签详情页面
@@ -39,7 +40,7 @@ import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
 
 public class TableDetailPager extends MenuDetailBasePager {
 
-    private ViewPager viewpager;
+    private HorizontalScrollViewPager  viewpager;
     private TextView tv_title;
     private LinearLayout ll_point_group;
     private ListView listview;
@@ -81,7 +82,7 @@ public class TableDetailPager extends MenuDetailBasePager {
         listview = (ListView) view.findViewById(R.id.listview);
 
         View topNewsView = View.inflate(context,R.layout.topnews,null);
-        viewpager = (ViewPager) topNewsView.findViewById(R.id.viewpager);
+        viewpager = (HorizontalScrollViewPager ) topNewsView.findViewById(R.id.viewpager);
         tv_title = (TextView) topNewsView.findViewById(R.id.tv_title);
         ll_point_group = (LinearLayout) topNewsView.findViewById(R.id.ll_point_group);
 
