@@ -32,6 +32,7 @@ import app_beijingnews.alex.com.beijingnews.utils.CacheUtils;
 import app_beijingnews.alex.com.beijingnews.utils.Constants;
 import app_beijingnews.alex.com.beijingnews.utils.LogUtil;
 import app_beijingnews.alex.com.beijingnews.view.HorizontalScrollViewPager;
+import app_beijingnews.alex.com.beijingnews.view.RefreshListView;
 
 /**
  * 页签详情页面
@@ -43,7 +44,7 @@ public class TableDetailPager extends MenuDetailBasePager {
     private HorizontalScrollViewPager  viewpager;
     private TextView tv_title;
     private LinearLayout ll_point_group;
-    private ListView listview;
+    private RefreshListView listview;
     private TabDetailPagerListAdapter adapter;
     private ImageOptions imageOptions;
 
@@ -79,7 +80,7 @@ public class TableDetailPager extends MenuDetailBasePager {
     @Override
     public View initView() {
         View view = View.inflate(context, R.layout.tabdetail_pager,null);
-        listview = (ListView) view.findViewById(R.id.listview);
+        listview = (RefreshListView)view.findViewById(R.id.listview);
 
         View topNewsView = View.inflate(context,R.layout.topnews,null);
         viewpager = (HorizontalScrollViewPager ) topNewsView.findViewById(R.id.viewpager);
@@ -89,7 +90,23 @@ public class TableDetailPager extends MenuDetailBasePager {
         //把顶部轮播图视图，以头的方式添加到ListView中
         listview.addHeaderView(topNewsView);
 
+        //设置监听下拉刷新
+        listview.setOnRefreshListener(new MyOnRefreshListener());
+
         return view;
+    }
+
+    class MyOnRefreshListener implements RefreshListView.OnRefreshListener{
+
+        @Override
+        public void onPullDownRefresh() {
+            getDataFromNet();
+        }
+
+        @Override
+        public void onLoadMore() {
+
+        }
     }
 
     @Override
@@ -112,6 +129,9 @@ public class TableDetailPager extends MenuDetailBasePager {
 
     private void getDataFromNet() {
         RequestParams params = new RequestParams(url);
+        //设置连接超时时间 10s
+        params.setConnectTimeout(10000);
+
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
@@ -123,11 +143,17 @@ public class TableDetailPager extends MenuDetailBasePager {
                 //解析和处理数据
                 processData(result);
 
+                //隐藏下拉刷新控件
+                listview.onRefreshFinsh(true);
+
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 LogUtil.e(childrenData.getTitle()+"- 页面数据请求失败 == "+ex);
+                //隐藏下拉刷新控件，不更新时间，只隐藏
+                listview.onRefreshFinsh(false);
+
 
             }
 

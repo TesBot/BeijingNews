@@ -5,7 +5,7 @@
 
 
 
-    <ListView
+    <app_beijingnews.alex.com.beijingnews.view.RefreshListView
         android:cacheColorHint="@android:color/transparent"
         android:divider="@null"
         android:layout_width="match_parent"
